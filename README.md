@@ -1,29 +1,37 @@
-# VueJS-with-Vite
+# Projeto Estoque de Peças Manutenção Montagem
 
-This template should help get you started developing with Vue 3 in Vite.
+## Resumo
 
-## Recommended IDE Setup
+Sistema para controle de peças, da área de manutenção, entrada e saída de ferramentas, e almoxarifado virtual.
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
 
-## Customize configuration
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+# Template de Commits
 
-## Project Setup
+## Formato base:
 
-```sh
-npm install
-```
+---
 
-### Compile and Hot-Reload for Development
+## 🔧 Tipos comuns
 
-```sh
-npm run dev
-```
+| Tipo      | Uso                                                        |
+|-----------|------------------------------------------------------------|
+| `feat`    | Nova funcionalidade (ex: nova tela, novo endpoint, etc)    |
+| `fix`     | Correção de bug                                            |
+| `docs`    | Alterações na documentação                                 |
+| `style`   | Formatação, identação, espaços — sem alteração de lógica  |
+| `refactor`| Refatoração sem mudança de comportamento                   |
+| `perf`    | Melhorias de performance                                   |
+| `test`    | Adição ou ajuste de testes                                 |
+| `chore`   | Tarefas menores (ex: configs, scripts de build, etc)       |
+| `ci`      | Alterações em pipelines de CI/CD                           |
 
-### Compile and Minify for Production
+---
 
-```sh
-npm run build
-```
+## Exemplos:
+
+- feat(api): adicionar endpoint de criação de ordens de manutenção
+
+- fix(ui): corrigir quebra de layout no formulário de estoque
+
+- refactor(service): otimizar consulta de itens em manutenção
