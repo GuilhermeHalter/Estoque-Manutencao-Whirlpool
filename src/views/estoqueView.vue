@@ -1,5 +1,5 @@
 <template>
-  <router-view />
+  <h2>Estoque</h2>
 </template>
 
 <script setup>

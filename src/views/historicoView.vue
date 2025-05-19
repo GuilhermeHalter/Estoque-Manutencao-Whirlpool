@@ -1,5 +1,5 @@
 <template>
-  <router-view />
+  <h2>Historico</h2>
 </template>
 
 <script setup>

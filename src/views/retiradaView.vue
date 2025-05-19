@@ -1,5 +1,5 @@
 <template>
-  <router-view />
+  <h2>Retirada</h2>
 </template>
 
 <script setup>
