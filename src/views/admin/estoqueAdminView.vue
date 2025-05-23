@@ -11,9 +11,27 @@
           Nova Categoria
         </button>
 
+        <button >
+          Deletar Categoria
+        </button>
+
+        <button >
+          Editar Categoria
+        </button>
+        
+        <!-- buttons Produtos -->
         <button @click="modalProdutoOpen = true" class="bg-green-600 text-white px-4 py-2 rounded">
           Novo Produto
         </button>
+
+        <button >
+          Deletar Produto
+        </button>
+
+        <button >
+          Editar Produto
+        </button>
+        
       </div>
 
       <!-- Modal de Categoria -->
@@ -29,8 +47,6 @@
         @close="modalProdutoOpen = false"
         @save="handleProdutoSave"
       />
-
-      <button type="submit">Remover</button>
 
       <div class="cards">
         <cardEstoqueComp 

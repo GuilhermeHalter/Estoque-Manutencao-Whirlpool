@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const API_URL = 'https://mgfmg6-8000.csb.app/api/produtos/'
+const API_URL = 'https://759lh3-8000.csb.app/api/produtos/'
 
 // Obter a lista de produtos
 export async function fetchProdutos() {
