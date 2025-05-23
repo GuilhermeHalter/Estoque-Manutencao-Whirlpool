@@ -5,6 +5,8 @@ import EstoqueView from  '../views/estoqueView.vue'
 import HistoricoView from  '../views/historicoView.vue'
 import FaceIDView from  '../views/faceIDView.vue'
 import RetiradaView from  '../views/retiradaView.vue'
+import LoginAdminView from  '../views/admin/loginAdminView.vue'
+import EstoqueAdminView from  '../views/admin/estoqueAdminView.vue'
 
 const routes = [
   {
@@ -31,6 +33,16 @@ const routes = [
     path: '/retirada',
     name: 'Retirada',
     component: RetiradaView
+  },
+  {
+    path: '/admin',
+    name: 'LoginAdmin',
+    component: LoginAdminView
+  },
+  {
+    path: '/admin/estoque',
+    name: 'EstoqueAdmin',
+    component: EstoqueAdminView
   }
 ]
 
