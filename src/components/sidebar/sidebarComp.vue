@@ -13,15 +13,28 @@
 
     <div class="user-info">
       <div class="details">
-        <p class="name">Guilherme Halter</p>
-        <p class="re">RE: 123456</p>
+        <p class="name">{{ nome }}</p>
+        <p class="re">RE: {{ re }}</p>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
+  import { ref, onMounted } from 'vue'
+
+  const nome = ref('')
+  const re = ref('')
+
+  onMounted(() => {
+    const user = JSON.parse(localStorage.getItem('user'))
+    if (user) {
+      nome.value = user.nome
+      re.value = user.RE
+    }
+  })
 </script>
+
 
 <style scoped>
 .sidebar {
