@@ -1,14 +1,14 @@
 <template>
   <div class="card">
     <div class="header">
-      <span class="tag">Rolamentos</span>
+      <span class="tag">{{ nomeCategoria }}</span>
       <input type="checkbox" class="checkbox" />
     </div>
     <div class="content">
-      <div class="title">Rolamentos 6040</div>
-      <div class="code">Código: RL-6040</div>
+      <div class="title">{{ produto.nome }}</div>
+      <div class="code">Código: {{ produto.numero_serie }}</div>
       <div class="stock">
-        Disponível: <span class="quantity">2</span>
+        Disponível: <span class="quantity">{{ produto.quantidade }}</span>
         <i class="cart-icon">🛒</i>
       </div>
     </div>
@@ -16,8 +16,12 @@
 </template>
 
 <script setup>
-
+defineProps({
+  produto: Object,
+  nomeCategoria: String
+})
 </script>
+
 
 <style scoped>
 .card {
