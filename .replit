@@ -2,6 +2,7 @@ run = "vite"
 entrypoint = "src/App.vue"
 
 hidden = [".config", "tsconfig.json", "tsconfig.node.json", "vite.config.js", ".gitignore"]
+modules = ["nodejs-20"]
 
 [nix]
 channel = "stable-24_05"

@@ -1,19 +1,17 @@
 <template>
   <div class="sidebar">
     <div class="logo">
-      <img src="@/assets/logo.png" alt="Logo" />
       <p>Estoque Manutenção</p>
     </div>
 
     <nav class="nav-links">
-      <i class="fa-solid fa-box-open"></i><RouterLink to="/" class="link">Estoque</RouterLink>
-      <RouterLink to="/" class="link">Retirada</RouterLink>
-      <RouterLink to="/relatorios" class="link">Historico</RouterLink>
+      <i class="fa-solid fa-box-open"></i><RouterLink to="/estoque" class="link">Estoque</RouterLink>
+      <RouterLink to="/retirada" class="link">Retirada</RouterLink>
+      <RouterLink to="/historico" class="link">Historico</RouterLink>
       <RouterLink to="/configuracoes" class="link">Configurações</RouterLink>
     </nav>
 
     <div class="user-info">
-      <img class="avatar" src="@/assets/usuario.jpg" alt="Usuário" />
       <div class="details">
         <p class="name">Guilherme Halter</p>
         <p class="re">RE: 123456</p>
