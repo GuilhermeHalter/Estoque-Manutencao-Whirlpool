@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const API_URL = 'https://759lh3-8000.csb.app//api/categorias/'
+const API_URL = 'https://estoque-b8sm.onrender.com/api/categorias/'
 
 export async function fetchCategorias() {
   const response = await axios.get(API_URL)
