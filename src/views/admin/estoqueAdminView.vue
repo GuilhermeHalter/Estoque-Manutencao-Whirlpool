@@ -11,27 +11,18 @@
           Nova Categoria
         </button>
 
-        <button >
-          Deletar Categoria
+        <button @click="modalGerenciarCategoriasOpen = true" class="bg-blue-600 text-white px-4 py-2 rounded">
+          Gerenciar Categoria
         </button>
 
-        <button >
-          Editar Categoria
-        </button>
-        
-        <!-- buttons Produtos -->
         <button @click="modalProdutoOpen = true" class="bg-green-600 text-white px-4 py-2 rounded">
           Novo Produto
         </button>
 
-        <button >
-          Deletar Produto
+        <button @click="modalGerenciarProdutosOpen = true" class="bg-blue-600 text-white px-4 py-2 rounded">
+          Gerenciar Produto
         </button>
 
-        <button >
-          Editar Produto
-        </button>
-        
       </div>
 
       <!-- Modal de Categoria -->
@@ -39,6 +30,24 @@
         :show="modalCategoriaOpen"
         @close="modalCategoriaOpen = false"
         @save="handleCategoriaSave"
+      />
+
+      <!-- Modal Gerenciar Categoria -->
+      <ManageCategoriasModal
+        :show="modalGerenciarCategoriasOpen"
+        :categorias="categorias"
+        @close="modalGerenciarCategoriasOpen = false"
+        @categoria-deletada="removerCategoria"
+        @categoria-editada="atualizarCategoria"
+      />
+
+      <ManageProdutosModal
+        :show="modalGerenciarProdutosOpen"
+        :produtos="produtos"
+        :categorias="categorias"
+        @close="modalGerenciarProdutosOpen = false"
+        @produto-deletado="removerProduto"
+        @produto-editado="atualizarProduto"
       />
 
       <!-- Modal de Produto -->
@@ -65,8 +74,12 @@ import { ref, onMounted } from 'vue'
 import cardEstoqueComp from '../../components/cards/cardEstoqueComp.vue'
 import CreateCategoryModal from '../../components/cards/create/createCategoriaComp.vue'
 import CreateProductModal from '../../components/cards/create/createProdutoComp.vue'
+import ManageCategoriasModal from '../../components/cards/manage/manageCategoriasComp.vue'
 import { fetchProdutos } from '../../services/produtoService'
 import { fetchCategorias } from '../../services/categoriaService'
+  import ManageProdutosModal from '../../components/cards/manage/manageProdutosComp.vue'
+
+
 
 const produtos = ref([])
 const categorias = ref([])
@@ -74,6 +87,8 @@ const categoriaMap = ref({})
 
 const modalCategoriaOpen = ref(false)
 const modalProdutoOpen = ref(false)
+const modalGerenciarCategoriasOpen = ref(false)
+const modalGerenciarProdutosOpen = ref(false)
 
 async function carregarDados() {
   categorias.value = await fetchCategorias()
@@ -92,6 +107,18 @@ function handleCategoriaSave(novaCategoria) {
 
 function handleProdutoSave(novoProduto) {
   produtos.value.push(novoProduto)
+}
+
+function removerCategoria(id) {
+  categorias.value = categorias.value.filter(cat => cat.id !== id)
+}
+
+function atualizarCategoria(categoriaAtualizada) {
+  const index = categorias.value.findIndex(cat => cat.id === categoriaAtualizada.id)
+  if (index !== -1) {
+    categorias.value[index] = categoriaAtualizada
+    categoriaMap.value[categoriaAtualizada.id] = categoriaAtualizada.nome
+  }
 }
 
 onMounted(carregarDados)

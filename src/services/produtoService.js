@@ -18,3 +18,13 @@ export async function createProduto(produtoData) {
     throw error
   }
 }
+
+export async function deleteProduto(id){
+  const response = await axios.delete(`${API_URL}${id}/`)
+  return response.data
+}
+
+export async function updateProduto(id, dadosAtualizados){
+  const response = await axios.put(`${API_URL}${id}/`, dadosAtualizados)
+  return response.data
+}
