@@ -1,14 +1,29 @@
 <template>
   <div class="sidebar">
     <div class="logo">
-      <p>Estoque Manutenção</p>
+      <i class="fa-solid fa-box-open" style="color: #38a9ff;"></i> <p>Estoque Manutenção</p>
     </div>
 
     <nav class="nav-links">
-      <i class="fa-solid fa-box-open"></i><RouterLink to="/estoque" class="link">Estoque</RouterLink>
-      <RouterLink to="/retirada" class="link">Retirada</RouterLink>
-      <RouterLink to="/historico" class="link">Historico</RouterLink>
-      <RouterLink to="/configuracoes" class="link">Configurações</RouterLink>
+      <div class="nav-item">
+        <i class="fa-solid fa-box-open"></i>
+        <RouterLink to="/estoque" class="link">Estoque</RouterLink>
+      </div>
+
+      <div class="nav-item">
+        <i class="fa-solid fa-clipboard-list"></i>
+        <RouterLink to="/retirada" class="link">Retirada</RouterLink>
+      </div>
+
+      <div class="nav-item">
+        <i class="fa-solid fa-clock"></i>
+        <RouterLink to="/historico" class="link">Histórico</RouterLink>
+      </div>
+
+      <div class="nav-item">
+        <i class="fa-solid fa-gears"></i>
+        <RouterLink to="/configuracoes" class="link">Configurações</RouterLink>
+      </div>
     </nav>
 
     <div class="user-info">
@@ -16,6 +31,7 @@
         <p class="name">{{ nome }}</p>
         <p class="re">RE: {{ re }}</p>
       </div>
+      <i class="fa-solid fa-right-from-bracket"></i>
     </div>
   </div>
 </template>
@@ -46,12 +62,18 @@
   border: 1px solid #100;
 }
 .logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap:8px;
+  font-size: 17px;
+  font-weight: 600;
   padding: 20px;
   text-align: center;
   border-bottom: 1px solid #333;
 }
-.logo img {
-  width: 120px;
+.logo i {
+  font-size: 25px;
 }
 
 .nav-links {
@@ -60,8 +82,32 @@
   padding: 20px;
   color: darkgray;
   font-weight: bold;
-  gap: 15px;
+  gap: 75px;
 }
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 17px;
+    color: black;
+  }
+
+  .nav-item i {
+    font-size: 20px;
+    color: #859199;
+  }
+
+  .nav-item .link {
+    font-size: 18px;
+    text-decoration: none;
+    color: black;
+    font-weight: bold;
+  }
+
+  .nav-item .link:hover {
+    color: #3F91F5;
+    transition: 0.3s;
+  }
+
 .link {
   color: black;
   text-decoration: none;
@@ -78,8 +124,14 @@
   padding: 20px;
   display: flex;
   align-items: center;
+  gap: 60px;
   border-top: 1px solid #333;
 }
+
+.user-info i{
+  font-size: 20px
+}
+  
 .avatar {
   width: 48px;
   height: 48px;
