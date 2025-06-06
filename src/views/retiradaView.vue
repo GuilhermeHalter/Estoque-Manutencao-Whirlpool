@@ -6,12 +6,24 @@
 
           <input type="search">
           <input type="filter">
+
+          <cardRetiradaComp
+            v-for="produto in produtos"
+            :key="produto.id"
+            :produto="produto"
+            :nomeCategoria="produto.categoria"
+          />
+
         </div>
   </div>
 </template>
 
 <script setup>
-  import sidebarComp from '../components/sidebar/sidebarComp.vue';
+import { ref } from 'vue';
+import sidebarComp from '../components/sidebar/sidebarComp.vue';
+import cardRetiradaComp from '../components/cards/cardRetiradaComp.vue';
+
+const produtos = ref([]);
 </script>
 
 <style scoped>

@@ -48,8 +48,6 @@
 import authController from '../controllers/authController';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
-
-
 export default {
   data() {
     return {

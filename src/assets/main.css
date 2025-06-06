@@ -1,7 +1,18 @@
+:root {
+  --bg: #f5f5f5;
+  --fg: #333;
+}
+
+.dark {
+  --bg: #1f2937;
+  --fg: #f3f4f6;
+}
+
 body {
   margin: 0;
   padding: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f5f5f5;
-  color: #333;
+  background-color: var(--bg);
+  color: var(--fg);
+  transition: background-color 0.3s, color 0.3s ease;
 }

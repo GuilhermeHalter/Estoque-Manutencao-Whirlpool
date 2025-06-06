@@ -7,6 +7,7 @@ import FaceIDView from  '../views/faceIDView.vue'
 import RetiradaView from  '../views/retiradaView.vue'
 import LoginAdminView from  '../views/admin/loginAdminView.vue'
 import EstoqueAdminView from  '../views/admin/estoqueAdminView.vue'
+import ConfiguracoesView from  '../views/configuracaoView.vue'
 
 const routes = [
   {
@@ -43,6 +44,11 @@ const routes = [
     path: '/admin/estoque',
     name: 'EstoqueAdmin',
     component: EstoqueAdminView
+  },
+  {
+    path: '/configuracoes',
+    name: 'Configuracoes',
+    component: ConfiguracoesView
   }
 ]
 

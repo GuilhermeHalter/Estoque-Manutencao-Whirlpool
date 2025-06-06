@@ -1,36 +1,51 @@
 <template>
   <div class="card">
-    <div class="header">
-      <span class="tag">{{ nomeCategoria }}</span>
-    <input
-      type="checkbox"
-      class="checkbox"
-      :checked="isSelected"
-      @change="toggleSelection"
-    />
+    <div class="card-header">
+      <span class="categoria-tag">{{ nomeCategoria }}</span>
+      <input
+        type="checkbox"
+        class="card-checkbox"
+        :checked="isSelected"
+        @change="toggleSelection"
+      />
     </div>
-    <div class="content">
-      <div class="title">{{ produto.nome }}</div>
-      <div class="code">Código: {{ produto.numero_serie }}</div>
-      <div class="stock">
-        Disponível: <span class="quantity">{{ produto.quantidade }}</span>
-        <i class="fa-solid fa-cart-shopping"></i>
+
+    <div class="card-content">
+      <div class="card-title">{{ produto.nome }}</div>
+      <div class="card-code">Código: {{ produto.numero_serie }}</div>
+      <div class="card-stock">
+        Disponível:
+        <span class="card-quantity">{{ produto.quantidade }}</span>
+        <i class="fa-solid fa-cart-shopping cart-icon"></i>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { defineProps, defineEmits } from 'vue'
 import { computed } from 'vue'
 
-  const props = defineProps({
-    produto: Object,
-    nomeCategoria: String,
-    selectedItems: Array
-  })
+const props = defineProps({
+  produto: {
+    type: Object,
+    required: true
+  },
+  nomeCategoria: {
+    type: String,
+    required: true
+  },
+  selectedItems: {
+    type: Array,
+    default: () => []
+  }
+})
 
 const emit = defineEmits(['toggle-select'])
+
+const isSelected = computed(() => {
+  return Array.isArray(props.selectedItems) &&
+         props.selectedItems.some(p => p.id === props.produto.id)
+})
 
 function toggleSelection(event) {
   emit('toggle-select', {
@@ -38,10 +53,6 @@ function toggleSelection(event) {
     checked: event.target.checked
   })
 }
-
-  const isSelected = computed(() => {
-    return props.selectedItems.some(p => p.id === props.produto.id)
-  })
 </script>
 
 <style scoped>
@@ -57,13 +68,13 @@ function toggleSelection(event) {
   margin-top: 20px;
 }
 
-.header {
+.card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.tag {
+.categoria-tag {
   background-color: #f5f5f5;
   border-radius: 12px;
   border: 1px solid darkgray;
@@ -71,27 +82,27 @@ function toggleSelection(event) {
   font-size: 12px;
 }
 
-.checkbox {
+.card-checkbox {
   width: 16px;
   height: 16px;
 }
 
-.content {
+.card-content {
   margin-top: 12px;
 }
 
-.title {
+.card-title {
   font-weight: bold;
   font-size: 16px;
 }
 
-.code {
+.card-code {
   font-size: 14px;
   color: #666;
   margin-top: 4px;
 }
 
-.stock {
+.card-stock {
   margin-top: 12px;
   display: flex;
   justify-content: space-between;
@@ -99,7 +110,7 @@ function toggleSelection(event) {
   font-size: 14px;
 }
 
-.quantity {
+.card-quantity {
   color: red;
   font-weight: bold;
 }

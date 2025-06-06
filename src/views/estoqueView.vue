@@ -6,7 +6,11 @@
           <p>Vizualize os itens disponiveis no estoque</p>
 
           <div class="filtro-container">
-            <input type="search" placeholder="Busque produtos por Nome ou Codigo...">
+            <input
+              type="search"
+              placeholder="Busque produtos por Nome ou Código..."
+              v-model="searchTerm"
+            />
 
             <select class="filtro-select" v-model="categoriaSelecionada">
               <option value="">Todas as categorias</option>
@@ -27,9 +31,17 @@
               v-for="item in produtosFiltrados" 
               :key="item.id" 
               :produto="item" 
-              :nomeCategoria="categoriaMap[item.categoria]" 
+              :nomeCategoria="categoriaMap[item.categoria]"
+              :selectedItems="selectedItems"
+              @toggle-select="handleToggleSelection"
             />
           </div>
+
+          <ItemEstoqueSelectComp
+            :selectedCount="selectedItems.length"
+            :onClear="clearSelection"
+            :onAddToCart="addToCart"
+          />
         </div>
   </div>
 </template>
@@ -39,20 +51,36 @@ import sidebarComp from '../components/sidebar/sidebarComp.vue';
 import cardEstoqueComp from '../components/cards/cardEstoqueComp.vue';
 import { fetchProdutos } from '../services/produtoService';
 import { fetchCategorias } from '../services/categoriaService';
+import ItemEstoqueSelectComp from '../components/ItemEstoqueSelectComp.vue';
 import { ref, onMounted, computed } from 'vue';
 
 const produtos = ref([])
 const categorias = ref([])
 const categoriaMap = ref({})
+const selectedItems = ref([])
+const searchTerm = ref('')
 
-// Filtro de categoria
+
 const categoriaSelecionada = ref('')
 
-// Computado: filtra com base na seleção (ou retorna todos)
-const produtosFiltrados = computed(() => {
-  if (!categoriaSelecionada.value) return produtos.value
-  return produtos.value.filter(p => p.categoria === categoriaSelecionada.value)
-})
+  const produtosFiltrados = computed(() => {
+    let resultado = produtos.value
+
+    if (categoriaSelecionada.value) {
+      resultado = resultado.filter(p => p.categoria === categoriaSelecionada.value)
+    }
+
+    if (searchTerm.value.trim()) {
+      const termo = searchTerm.value.trim().toLowerCase()
+      resultado = resultado.filter(p =>
+        p.nome.toLowerCase().includes(termo) ||
+        p.numero_serie.toLowerCase().includes(termo)
+      )
+    }
+
+    return resultado
+  })
+
 
 async function carregarDados() {
   categorias.value = await fetchCategorias()
@@ -64,6 +92,21 @@ async function carregarDados() {
   produtos.value = await fetchProdutos()
 }
 
+  function handleToggleSelection({ produto, checked }) {
+    if (checked) {
+      if (!selectedItems.value.find(p => p.id === produto.id)) {
+        selectedItems.value.push(produto)
+      }
+    } else {
+      selectedItems.value = selectedItems.value.filter(p => p.id !== produto.id)
+    }
+  }
+
+  function clearSelection() {
+    selectedItems.value = []
+  }
+
+
 onMounted(carregarDados)
 </script>
 
@@ -72,7 +115,6 @@ onMounted(carregarDados)
   .estoque-container {
     display: flex;
     height: 100vh;
-    background-color: #f9f9f9;
   }
 
   .estoque-content {
