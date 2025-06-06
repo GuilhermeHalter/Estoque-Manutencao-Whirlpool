@@ -1,29 +1,33 @@
 <template>
   <div class="card">
-    <div class="card-header">
-      <span class="categoria-tag">{{ nomeCategoria }}</span>
-      <input
-        type="checkbox"
-        class="card-checkbox"
-        :checked="isSelected"
-        @change="toggleSelection"
-      />
+    <div class="card-title">{{ produto.nome }}</div>
+    <div class="card-code">Código: {{ produto.numero_serie }}</div>
+    <div class="card-category">Categoria: {{ nomeCategoria }}</div>
+    <div class="card-stock">
+      Disponível: <span class="card-quantity">{{ produto.quantidade }}</span>
     </div>
+    <button class="retirar-btn" @click="abrirModal">
+      <i class="fa-solid fa-cart-shopping"></i>
+      Retirar Item
+    </button>
 
-    <div class="card-content">
-      <div class="card-title">{{ produto.nome }}</div>
-      <div class="card-code">Código: {{ produto.numero_serie }}</div>
-      <div class="card-stock">
-        Disponível:
-        <span class="card-quantity">{{ produto.quantidade }}</span>
-        <i class="fa-solid fa-cart-shopping cart-icon"></i>
+  </div>
+
+  <!-- Modal de confirmação -->
+  <div v-if="mostrarModal" class="modal-overlay">
+    <div class="modal-content">
+      <p>Realmente deseja retirar <strong>{{ produto.nome }}</strong>?</p>
+      <div class="modal-buttons">
+        <button @click="confirmarRetirada" class="confirmar">Sim</button>
+        <button @click="fecharModal" class="cancelar">Cancelar</button>
       </div>
     </div>
   </div>
 </template>
 
+
 <script setup>
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 
 const props = defineProps({
   produto: {
@@ -47,6 +51,28 @@ const isSelected = computed(() => {
          props.selectedItems.some(p => p.id === props.produto.id)
 })
 
+const mostrarModal = ref(false)
+
+  function abrirModal() {
+    mostrarModal.value = true
+  }
+
+  function fecharModal() {
+    mostrarModal.value = false
+  }
+
+  function handleLimpar() {
+    itensSelecionados.value = []
+  }
+
+  function confirmarRetirada() {
+    emit('toggle-select', {
+      produto: props.produto,
+      quantidadeSelecionada: 1
+    })
+    fecharModal()
+  }
+
 function toggleSelection(event) {
   emit('toggle-select', {
     produto: props.produto,
@@ -56,67 +82,100 @@ function toggleSelection(event) {
 </script>
 
 <style scoped>
-.card {
-  border: 1px solid #ccc;
-  border-radius: 12px;
-  padding: 16px;
-  width: 220px;
-  font-family: Arial, sans-serif;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  margin-top: 20px;
-}
+  .card {
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    padding: 16px;
+    width: 240px;
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
 
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
+  .card-title {
+    font-weight: bold;
+    font-size: 16px;
+  }
 
-.categoria-tag {
-  background-color: #f5f5f5;
-  border-radius: 12px;
-  border: 1px solid darkgray;
-  padding: 4px 8px;
-  font-size: 12px;
-}
+  .card-code,
+  .card-category {
+    font-size: 14px;
+    color: #aaa;
+  }
 
-.card-checkbox {
-  width: 16px;
-  height: 16px;
-}
+  .card-stock {
+    font-size: 14px;
+  }
 
-.card-content {
-  margin-top: 12px;
-}
+  .card-quantity {
+    color: red;
+    font-weight: bold;
+  }
 
-.card-title {
-  font-weight: bold;
-  font-size: 16px;
-}
+  .retirar-btn {
+    background-color: #007aff;
+    color: white;
+    border: none;
+    padding: 10px;
+    margin-top: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
 
-.card-code {
-  font-size: 14px;
-  color: #666;
-  margin-top: 4px;
-}
+  .retirar-btn i {
+    font-size: 16px;
+  }
 
-.card-stock {
-  margin-top: 12px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 14px;
-}
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+  }
 
-.card-quantity {
-  color: red;
-  font-weight: bold;
-}
+  .modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 260px;
+    text-align: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  }
 
-.cart-icon {
-  font-size: 18px;
-  cursor: pointer;
-}
+  .modal-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 16px;
+  }
+
+  .modal-buttons .confirmar {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .modal-buttons .cancelar {
+    background-color: #ddd;
+    color: #333;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
 </style>
