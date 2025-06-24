@@ -28,7 +28,7 @@
 
     <div class="user-info">
       <div class="details">
-        <p class="name">{{ nome }}</p>
+        <p class="name">{{ nome }} {{sobrenome}}</p>
         <p class="re">RE: {{ re }}</p>
       </div>
       <i class="fa-solid fa-right-from-bracket"></i>
@@ -40,15 +40,18 @@
   import { ref, onMounted } from 'vue'
 
   const nome = ref('')
+  const sobrenome = ref('')
   const re = ref('')
 
   onMounted(() => {
-    const user = JSON.parse(localStorage.getItem('user'))
-    if (user) {
-      nome.value = user.nome
-      re.value = user.RE
+    const userArray = JSON.parse(localStorage.getItem('user'))
+    if (userArray && userArray.length > 0) {
+      nome.value = userArray[0].first_name
+      sobrenome.value = userArray[0].last_name
+      re.value = userArray[0].re
     }
   })
+
 </script>
 
 
@@ -59,7 +62,7 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  border: 1px solid #100;
+  border: 1px solid lightgray;
 }
 .logo {
   display: flex;
@@ -70,7 +73,7 @@
   font-weight: 600;
   padding: 20px;
   text-align: center;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid lightgray;
 }
 .logo i {
   font-size: 25px;
@@ -125,7 +128,7 @@
   display: flex;
   align-items: center;
   gap: 60px;
-  border-top: 1px solid #333;
+  border-top: 1px solid lightgray;
 }
 
 .user-info i{

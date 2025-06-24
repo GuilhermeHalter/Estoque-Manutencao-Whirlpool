@@ -1,30 +1,31 @@
-import axios from 'axios'
-
-const API_URL = 'https://estoque-b8sm.onrender.com/api/produtos/'
+// src/api/produtos.js
+import apiClient from '../api/api'; 
 
 // Obter a lista de produtos
 export async function fetchProdutos() {
-  const response = await axios.get(API_URL)
-  return response.data
+  const response = await apiClient.get('produtos/');
+  return response.data;
 }
 
 // Criar um novo produto
 export async function createProduto(produtoData) {
   try {
-    const response = await axios.post(API_URL, produtoData)
-    return response.data
+    const response = await apiClient.post('produtos/', produtoData);
+    return response.data;
   } catch (error) {
-    console.error('Erro ao criar produto:', error.response?.data || error.message)
-    throw error
+    console.error('Erro ao criar produto:', error.response?.data || error.message);
+    throw error;
   }
 }
 
-export async function deleteProduto(id){
-  const response = await axios.delete(`${API_URL}${id}/`)
-  return response.data
+// Deletar um produto
+export async function deleteProduto(id) {
+  const response = await apiClient.delete(`produtos/${id}/`);
+  return response.data;
 }
 
-export async function updateProduto(id, dadosAtualizados){
-  const response = await axios.put(`${API_URL}${id}/`, dadosAtualizados)
-  return response.data
+// Atualizar um produto
+export async function updateProduto(id, dadosAtualizados) {
+  const response = await apiClient.put(`produtos/${id}/`, dadosAtualizados);
+  return response.data;
 }

@@ -2,36 +2,39 @@
   <div class="itens-selecionados-card">
     <h3>Itens selecionados</h3>
 
-    <div class="carrinho-vazio" v-if="itens.length === 0">
+    <div class="carrinho-vazio" v-if="itensLocais.length === 0">
       <i class="fa-solid fa-cart-shopping"></i>
       <p>Carrinho vazio</p>
       <span>Adicione itens para realizar a retirada.</span>
     </div>
 
-    <li v-for="item in itens" :key="item.id">
-      <div class="info-item">
-        <p>{{ item.nome }}</p>
-        <div>
-          <label>Quantidade:</label>
-          <input
-            type="number"
-            v-model.number="item.quantidadeSelecionada"
-            :min="1"
-            :max="item.quantidade"
-            class="input-quantidade"
-          />
-          <span>/ {{ item.quantidade }} disponíveis</span>
+    <ul v-else>
+      <li v-for="item in itensLocais" :key="item.id">
+        <div class="info-item">
+          <p>{{ item.nome }}</p>
+          <div>
+            <label>Quantidade:</label>
+            <input
+              type="number"
+              v-model.number="item.quantidadeSelecionada"
+              :min="1"
+              :max="item.quantidade"
+              class="input-quantidade"
+            />
+            <span>/ {{ item.quantidade }} disponíveis</span>
+          </div>
         </div>
-      </div>
-      <button @click="removerItem(item.id)">✕</button>
-    </li>
-
-
-
+        <button @click="removerItem(item.id)">✕</button>
+      </li>
+    </ul>
 
     <div class="observacao">
       <label for="obs">Observação (opcional)</label>
-      <textarea id="obs" v-model="observacao" placeholder="Adicione uma observação sobre esta retirada..."></textarea>
+      <textarea
+        id="obs"
+        v-model="observacao"
+        placeholder="Adicione uma observação sobre esta retirada..."
+      ></textarea>
     </div>
 
     <div class="botoes">
@@ -42,37 +45,44 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 
 const props = defineProps({
-  itens: {
-    type: Array,
-    default: () => []
-  }
+  itens: { type: Array, default: () => [] }
 })
 
-const emit = defineEmits(['confirmar', 'limpar', 'remover'])
+const emit = defineEmits(['confirmar', 'limpar', 'remover', 'atualizar-itens'])
 
 const observacao = ref('')
+const itensLocais = ref([])
 
-  function confirmarRetirada() {
-    emit('toggle-select', {
-      produto: props.produto,
-      quantidadeSelecionada: 1 // inicia com 1 unidade
-    })
-    fecharModal()
-  }
+watch(() => props.itens, (novos) => {
+  itensLocais.value = novos.map(i => ({
+    ...i,
+    quantidadeSelecionada: i.quantidadeSelecionada || 1
+  }))
+}, { immediate: true })
 
+watch(itensLocais, (val) => {
+  emit('atualizar-itens', val)
+}, { deep: true })
+
+function confirmarRetirada() {
+  emit('confirmar', {
+    itens: itensLocais.value,
+    observacao: observacao.value
+  })
+}
 
 function limparItens() {
   emit('limpar')
+  observacao.value = ''
 }
 
 function removerItem(id) {
   emit('remover', id)
 }
 </script>
-
 
 <style scoped>
 .itens-selecionados-card {
@@ -127,7 +137,7 @@ ul {
 }
 
 .observacao textarea {
-  width: 92%;
+  width: 100%;
   margin-top: 6px;
   padding: 10px;
   border-radius: 8px;
@@ -172,95 +182,88 @@ ul {
   justify-content: center;
 }
 
-  li {
-    display: flex;
-    flex-direction: row;
-    align-items: center; /* alinha tudo verticalmente ao centro */
-    padding: 12px 14px;
-    border-radius: 8px;
-    background-color: #fafafa;
-    border: 1px solid #ddd;
-    margin-bottom: 10px;
-    font-size: 14px;
-    color: #2c3e50;
-    transition: box-shadow 0.2s ease;
-  }
+li {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background-color: #fafafa;
+  border: 1px solid #ddd;
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: #2c3e50;
+  transition: box-shadow 0.2s ease;
+}
 
-  li:hover {
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    background-color: #fff;
-  }
+li:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+}
 
-  /* A div que engloba o nome e quantidade ocupa o máximo possível */
-  .info-item {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-  }
+.info-item {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
 
-  /* Nome do item em cima */
-  .info-item > p {
-    font-weight: 600;
-    color: #222;
-    margin: 0 0 6px 0;
-  }
+.info-item > p {
+  font-weight: 600;
+  color: #222;
+  margin: 0 0 6px 0;
+}
 
-  /* Linha da quantidade */
-  .info-item > div {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
+.info-item > div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
 
-  .info-item > div > label {
-    font-size: 13px;
-    color: #666;
-    white-space: nowrap;
-  }
+.info-item > div > label {
+  font-size: 13px;
+  color: #666;
+  white-space: nowrap;
+}
 
-  .info-item > div > .input-quantidade {
-    width: 40px;
-    padding: 4px 6px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    background: #fff;
-    color: #333;
-    transition: border-color 0.2s ease;
-  }
+.input-quantidade {
+  width: 40px;
+  padding: 4px 6px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fff;
+  color: #333;
+  transition: border-color 0.2s ease;
+}
 
-  .info-item > div > .input-quantidade:focus {
-    border-color: #007bff;
-    outline: none;
-    box-shadow: 0 0 4px #007bffaa;
-  }
+.input-quantidade:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 4px #007bffaa;
+}
 
-  .info-item > div > span {
-    font-size: 12px;
-    color: #999;
-    user-select: none;
-    white-space: nowrap;
-  }
+.info-item > div > span {
+  font-size: 12px;
+  color: #999;
+  user-select: none;
+  white-space: nowrap;
+}
 
-  /* Botão remover alinhado verticalmente no centro, sem margem no topo */
-  li > button {
-    background: transparent;
-    border: none;
-    color: #e74c3c;
-    font-size: 20px;
-    cursor: pointer;
-    padding: 4px;
-    border-radius: 4px;
-    transition: background-color 0.2s ease;
-    margin-left: 12px; /* espaço entre botão e conteúdo */
-    height: fit-content;
-  }
+li > button {
+  background: transparent;
+  border: none;
+  color: #e74c3c;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+  margin-left: 12px;
+  height: fit-content;
+}
 
-  li > button:hover {
-    background-color: #fceaea;
-    color: #c0392b;
-  }
-
-
-  
+li > button:hover {
+  background-color: #fceaea;
+  color: #c0392b;
+}
 </style>

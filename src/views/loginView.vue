@@ -27,7 +27,7 @@
 
       <form @submit.prevent="handleLogin">
         <label>Registro de empregado (RE)</label>
-        <input v-model="email" type="text" placeholder="Digite seu RE" required />
+        <input v-model="re" type="text" placeholder="Digite seu RE" required />
 
         <label>Senha</label>
         <input v-model="senha" type="password" placeholder="Digite sua senha" required />
@@ -51,7 +51,7 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 export default {
   data() {
     return {
-      email: '',
+      re: '',
       senha: '',
       errorMessage: '',
       metodo: 'tradicional',
@@ -59,12 +59,12 @@ export default {
   },
   methods: {
     async handleLogin() {
-      const result = await authController.login(this.email, this.senha);
-      if (result.success) {
-        this.errorMessage = '';
+      this.errorMessage = '';
+      try {
+        const user = await authController.login(this.re, this.senha);
         this.$router.push('/estoque');
-      } else {
-        this.errorMessage = result.message;
+      } catch (error) {
+        this.errorMessage = error.message || 'Erro ao fazer login';
       }
     },
   },

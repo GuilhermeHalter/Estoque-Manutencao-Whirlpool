@@ -1,30 +1,40 @@
 import apiClient from '../api/api';
 
 export default {
-  async login(email, senha) {
-  
-    const response = await apiClient.get('/usuarios/');
-    const usuarios = response.data;
+  async login(re, senha) {
+    try {
+      const response = await apiClient.post('/token/', {
+        re: re,
+        password: senha
+      });
 
-    
-    const user = usuarios.find(
-      (u) => u.email === email && u.senha === senha
-    );
+      const { access, refresh } = response.data;
+      localStorage.setItem('token', access);
+      localStorage.setItem('refreshToken', refresh);
 
-    if (user) {
-  
+      const userResponse = await apiClient.get('/usuarios/');
+      const user = userResponse.data;
       localStorage.setItem('user', JSON.stringify(user));
+
       return user;
-    } else {
-      throw new Error('Email ou senha inválidos');
+    } catch (error) {
+      console.error('Erro ao fazer login:', error.response?.data || error.message);
+      throw new Error('RE ou senha inválidos');
     }
   },
 
   logout() {
     localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    localStorage.removeItem('refreshToken');
   },
 
   getCurrentUser() {
-    return JSON.parse(localStorage.getItem('user'));
+    const user = localStorage.getItem('user');
+    try {
+      return user ? JSON.parse(user) : null;
+    } catch {
+      return null;
+    }
   }
 };
