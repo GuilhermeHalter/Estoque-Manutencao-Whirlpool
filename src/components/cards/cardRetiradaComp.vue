@@ -31,6 +31,8 @@ const props = defineProps({
   nomeCategoria: String
 })
 
+const { produto } = props
+
 const emit = defineEmits(['toggle-select'])
 
 const mostrarModal = ref(false)
@@ -46,7 +48,7 @@ function fecharModal() {
 function confirmarRetirada() {
   fecharModal()
   emit('toggle-select', {
-    produto: props.produto,
+    produto,
     quantidadeSelecionada: 1
   })
 }

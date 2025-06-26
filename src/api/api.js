@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
-  baseURL: 'https://ggfq4c-8000.csb.app/api/',
+  baseURL: 'https://979lmp-8000.csb.app/api/',
   headers: {
     'Content-Type': 'application/json',
   },

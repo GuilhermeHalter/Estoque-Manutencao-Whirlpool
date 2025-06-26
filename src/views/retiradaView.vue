@@ -129,7 +129,7 @@ async function enviarRetirada(itens, observacao) {
   }
 
   try {
-    await axios.post('https://ggfq4c-8000.csb.app/api/retiradas/', payload, {
+    await axios.post('https://979lmp-8000.csb.app/api/retiradas/', payload, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'

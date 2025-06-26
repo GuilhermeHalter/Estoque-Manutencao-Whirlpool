@@ -63,10 +63,6 @@ watch(() => props.itens, (novos) => {
   }))
 }, { immediate: true })
 
-watch(itensLocais, (val) => {
-  emit('atualizar-itens', val)
-}, { deep: true })
-
 function confirmarRetirada() {
   emit('confirmar', {
     itens: itensLocais.value,
