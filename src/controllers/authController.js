@@ -1,10 +1,17 @@
 import authService from '../services/authService';
 
 export default {
-  async login(email, senha) {
+  async login(re, senha) {
     try {
-      const user = await authService.login(email, senha);
-      return { success: true, user };
+      const allUsers = await authService.login(re, senha);
+
+      const user = allUsers.find(u => u.re === re);
+
+      if (user) {
+        return { success: true, user };
+      } else {
+        return { success: false, message: 'Usuário não encontrado' };
+      }
     } catch (error) {
       return { success: false, message: error.message };
     }

@@ -31,27 +31,33 @@
         <p class="name">{{ nome }} {{sobrenome}}</p>
         <p class="re">RE: {{ re }}</p>
       </div>
-      <i class="fa-solid fa-right-from-bracket"></i>
+      <i class="fa-solid fa-right-from-bracket" @click="logout" style="cursor: pointer;"></i>
     </div>
   </div>
 </template>
 
 <script setup>
-  import { ref, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 
-  const nome = ref('')
-  const sobrenome = ref('')
-  const re = ref('')
+const router = useRouter()
+const nome = ref('')
+const sobrenome = ref('')
+const re = ref('')
 
-  onMounted(() => {
-    const userArray = JSON.parse(localStorage.getItem('user'))
-    if (userArray && userArray.length > 0) {
-      nome.value = userArray[0].first_name
-      sobrenome.value = userArray[0].last_name
-      re.value = userArray[0].re
-    }
-  })
+onMounted(() => {
+  const user = JSON.parse(localStorage.getItem('user'))
+  if (user) {
+    nome.value = user.first_name || ''
+    sobrenome.value = user.last_name || ''
+    re.value = user.re || ''
+  }
+})
 
+function logout() {
+  localStorage.clear()
+  router.push('/')
+}
 </script>
 
 

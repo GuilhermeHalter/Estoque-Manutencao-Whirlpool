@@ -101,47 +101,48 @@ function handleRemover(id) {
   itensSelecionados.value = itensSelecionados.value.filter(item => item.id !== id)
 }
 
-async function enviarRetirada(itens, observacao) {
-  const userStr = localStorage.getItem('user')
-  const token = localStorage.getItem('token')
-  if (!userStr || !token) {
-    alert('Usuário não autenticado.')
-    return
+  async function enviarRetirada(itens, observacao) {
+    const userStr = localStorage.getItem('user')
+    const token = localStorage.getItem('token')
+
+    if (!userStr || !token) {
+      alert('Usuário não autenticado.')
+      return
+    }
+
+    const user = JSON.parse(userStr)
+
+    if (!user || !user.id) {
+      alert('Usuário inválido.')
+      return
+    }
+
+    const payload = {
+      usuario: user.id,
+      status: 1,
+      data: new Date().toISOString(),
+      itens: itens.map(i => ({
+        produto: i.id,
+        quantidade: i.quantidadeSelecionada
+      })),
+      observacoes: observacao || 'Retirada de itens'
+    }
+
+    try {
+      await axios.post('https://979lmp-8000.csb.app/api/retiradas/', payload, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      })
+      alert('Retirada enviada com sucesso!')
+      itensSelecionados.value = []
+    } catch (err) {
+      console.error(err)
+      alert('Erro ao enviar retirada.')
+    }
   }
 
-  const userArray = JSON.parse(userStr)
-  const user = Array.isArray(userArray) && userArray.length > 0 ? userArray[0] : null
-
-  if (!user) {
-    alert('Usuário inválido.')
-    return
-  }
-
-  const payload = {
-    usuario: user.id,
-    status: 1,
-    data: new Date().toISOString(),
-    itens: itens.map(i => ({
-      produto: i.id,
-      quantidade: i.quantidadeSelecionada
-    })),
-    observacoes: observacao || 'Retirada de itens'
-  }
-
-  try {
-    await axios.post('https://979lmp-8000.csb.app/api/retiradas/', payload, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
-    })
-    alert('Retirada enviada com sucesso!')
-    itensSelecionados.value = []
-  } catch (err) {
-    console.error(err)
-    alert('Erro ao enviar retirada.')
-  }
-}
 </script>
 
 <style scoped>

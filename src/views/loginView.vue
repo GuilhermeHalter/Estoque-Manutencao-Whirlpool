@@ -61,8 +61,14 @@ export default {
     async handleLogin() {
       this.errorMessage = '';
       try {
-        const user = await authController.login(this.re, this.senha);
-        this.$router.push('/estoque');
+        const response = await authController.login(this.re, this.senha);
+        console.log(response.user);
+        if (response.success && response.user) {
+          localStorage.setItem('user', JSON.stringify(response.user));
+          this.$router.push('/estoque');
+        } else {
+          this.errorMessage = response.message || 'Erro ao fazer login';
+        }
       } catch (error) {
         this.errorMessage = error.message || 'Erro ao fazer login';
       }

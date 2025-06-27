@@ -24,8 +24,6 @@
             </select>
           </div>
 
-        
-
           <div class="cards">
             <cardEstoqueComp 
               v-for="item in produtosFiltrados" 
@@ -105,7 +103,6 @@ async function carregarDados() {
   function clearSelection() {
     selectedItems.value = []
   }
-
 
 onMounted(carregarDados)
 </script>
