@@ -15,6 +15,7 @@
             :key="produto.id"
             :produto="produto"
             :nomeCategoria="categoriaMap[produto.categoria]"
+            :selecionado="itensSelecionados.some(item => item.id === produto.id)"
             @toggle-select="handleToggleSelect"
           />
         </div>

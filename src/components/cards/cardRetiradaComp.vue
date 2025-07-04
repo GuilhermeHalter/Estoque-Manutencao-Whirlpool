@@ -6,10 +6,16 @@
     <div class="card-stock">
       Disponível: <span class="card-quantity">{{ produto.quantidade }}</span>
     </div>
-    <button class="retirar-btn" @click="abrirModal">
+    <button
+      class="retirar-btn"
+      :disabled="selecionado"
+      :class="{ 'disabled': selecionado }"
+      @click="abrirModal"
+    >
       <i class="fa-solid fa-cart-shopping"></i>
-      Retirar Item
+      {{ selecionado ? 'Item já adicionado' : 'Retirar Item' }}
     </button>
+
 
     <div v-if="mostrarModal" class="modal-overlay" @click.self="fecharModal">
       <div class="modal-content">
@@ -26,10 +32,12 @@
 <script setup>
 import { ref } from 'vue'
 
-const props = defineProps({
-  produto: Object,
-  nomeCategoria: String
-})
+  const props = defineProps({
+    produto: Object,
+    nomeCategoria: String,
+    selecionado: Boolean 
+  })
+
 
 const { produto } = props
 
@@ -150,4 +158,15 @@ function confirmarRetirada() {
   border-radius: 6px;
   cursor: pointer;
 }
+
+  .retirar-btn.disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+    color: #666;
+  }
+
+  .retirar-btn.disabled i {
+    color: #888;
+  }
+
 </style>

@@ -56,12 +56,15 @@ const emit = defineEmits(['confirmar', 'limpar', 'remover', 'atualizar-itens'])
 const observacao = ref('')
 const itensLocais = ref([])
 
-watch(() => props.itens, (novos) => {
-  itensLocais.value = novos.map(i => ({
-    ...i,
-    quantidadeSelecionada: i.quantidadeSelecionada || 1
-  }))
-}, { immediate: true })
+  watch(() => props.itens, (novos) => {
+    itensLocais.value = novos.map(novo => {
+      const existente = itensLocais.value.find(i => i.id === novo.id)
+      return {
+        ...novo,
+        quantidadeSelecionada: existente?.quantidadeSelecionada || novo.quantidadeSelecionada || 1
+      }
+    })
+  }, { immediate: true })
 
 function confirmarRetirada() {
   emit('confirmar', {
@@ -133,7 +136,7 @@ ul {
 }
 
 .observacao textarea {
-  width: 100%;
+  width: 93%;
   margin-top: 6px;
   padding: 10px;
   border-radius: 8px;

@@ -11,9 +11,13 @@
           placeholder="🔍 Busque por Usuário, Item ou Código..."
           v-model="searchTerm"
         />
-        <button class="btn btn-outline">Selecionar Data</button>
-        <button class="btn btn-outline">Filter</button>
-        <button class="btn btn-icon">⭳ Export</button>
+        <div class="data-filtro">
+          <label>De: <input type="date" v-model="dataDe" /></label>
+          <label>Até: <input type="date" v-model="dataAte" /></label>
+        </div>
+
+        <button class="btn btn-outline" @click="aplicarFiltro">Filtrar</button>
+        <button class="btn btn-icon" @click="exportarParaPDF">⭳ Export</button>
       </div>
 
       <div class="filtros">
@@ -50,6 +54,8 @@
 </template>
 
 <script setup>
+import jsPDF from 'jspdf'
+import autoTable from 'jspdf-autotable'
 import sidebarComp from '../components/sidebar/sidebarComp.vue'
 import { ref, computed, onMounted } from 'vue'
 import apiClient from '../api/api'
@@ -57,66 +63,122 @@ import apiClient from '../api/api'
 const retiradas = ref([])
 const usuariosMap = ref({})
 const searchTerm = ref('')
+const dataDe = ref('')
+const dataAte = ref('')
+const filtro = ref('todas')
 
-  const fetchUsuarios = async () => {
-    try {
-      const response = await apiClient.get('/usuarios/')
-      const map = Object.fromEntries(
-        response.data.map(u => [u.id, `${u.first_name} ${u.last_name}`.trim()])
-      )
-      console.log('Usuários carregados:', map)  // veja o que foi carregado
-      usuariosMap.value = map
-      return map
-    } catch (err) {
-      console.error('Erro ao buscar usuários:', err)
-      return {}
-    }
+// Busca os usuários
+const fetchUsuarios = async () => {
+  try {
+    const response = await apiClient.get('/usuarios/')
+    const map = Object.fromEntries(
+      response.data.map(u => [u.id, `${u.first_name} ${u.last_name}`.trim()])
+    )
+    usuariosMap.value = map
+    return map
+  } catch (err) {
+    console.error('Erro ao buscar usuários:', err)
+    return {}
   }
+}
 
-  const fetchRetiradas = async (usuarios) => {
-    try {
-      const response = await apiClient.get('/retiradas/')
-      console.log('Retiradas:', response.data)  // veja os dados retornados
-      retiradas.value = response.data.map(r => {
-        const dataObj = new Date(r.data)
-        return {
-          id: r.id,
-          usuario_nome: usuarios[r.usuario] || `Usuário #${r.usuario}`,
-          data: dataObj.toLocaleDateString('pt-BR'),
-          hora: dataObj.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-          itens: r.itens.map(i => `${i.quantidade}x ${i.produto_nome}`),
-          observacoes: r.observacoes || ''
-        }
-      })
-    } catch (err) {
-      console.error('Erro ao buscar retiradas:', err)
-    }
+// Busca as retiradas
+const fetchRetiradas = async (usuarios) => {
+  try {
+    const response = await apiClient.get('/retiradas/')
+    retiradas.value = response.data.map(r => {
+      const dataObj = new Date(r.data)
+      return {
+        id: r.id,
+        usuario_nome: usuarios[r.usuario] || `Usuário #${r.usuario}`,
+        data: dataObj.toLocaleDateString('pt-BR'),
+        hora: dataObj.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+        itens: r.itens.map(i => `${i.quantidade}x ${i.produto_nome}`),
+        observacoes: r.observacoes || ''
+      }
+    })
+  } catch (err) {
+    console.error('Erro ao buscar retiradas:', err)
   }
+}
 
+// Chamada ao carregar
+onMounted(async () => {
+  const usuarios = await fetchUsuarios()
+  await fetchRetiradas(usuarios)
+})
 
-  onMounted(async () => {
-    const usuarios = await fetchUsuarios()
-    await fetchRetiradas(usuarios)
+// Computed com todos os filtros
+const retiradasFiltradas = computed(() => {
+  return retiradas.value.filter(r => {
+    const termo = searchTerm.value.toLowerCase()
+    const correspondeBusca =
+      !termo ||
+      r.usuario_nome.toLowerCase().includes(termo) ||
+      r.itens.some(item => item.toLowerCase().includes(termo))
+
+    const dataRetirada = new Date(`${r.data.split('/').reverse().join('-')}T${r.hora}`)
+    const de = dataDe.value ? new Date(dataDe.value) : null
+    const ate = dataAte.value ? new Date(dataAte.value) : null
+    const dentroDoIntervalo =
+      (!de || dataRetirada >= de) &&
+      (!ate || dataRetirada <= ate)
+
+    const usuarioLogado = JSON.parse(localStorage.getItem('user'))
+    const correspondeFiltroUsuario =
+      filtro.value === 'todas' || (usuarioLogado && r.usuario_nome === usuarioLogado.nome)
+
+    return correspondeBusca && dentroDoIntervalo && correspondeFiltroUsuario
+  })
+})
+
+// Ação do botão "Filtrar" (opcional)
+const aplicarFiltro = () => {
+  console.log('Filtros aplicados:', {
+    termo: searchTerm.value,
+    de: dataDe.value,
+    ate: dataAte.value,
+    tipo: filtro.value
+  })
+}
+
+// Geração do PDF
+const exportarParaPDF = () => {
+  const doc = new jsPDF()
+
+  doc.setFontSize(16)
+  doc.text('Histórico de Retiradas', 14, 20)
+
+  const tableData = retiradasFiltradas.value.map(r => [
+    r.usuario_nome,
+    r.data,
+    r.hora,
+    r.itens.join(', '),
+    r.observacoes || '-'
+  ])
+
+  autoTable(doc, {
+    startY: 30,
+    head: [['Usuário', 'Data', 'Hora', 'Itens', 'Observações']],
+    body: tableData,
+    styles: {
+      fontSize: 10,
+      cellPadding: 3
+    },
+    headStyles: {
+      fillColor: [56, 169, 255]
+    }
   })
 
-
-const retiradasFiltradas = computed(() => {
-  if (!searchTerm.value.trim()) return retiradas.value
-  const termo = searchTerm.value.toLowerCase()
-  return retiradas.value.filter(r =>
-    r.usuario_nome.toLowerCase().includes(termo) ||
-    r.itens.some(item => item.toLowerCase().includes(termo))
-  )
-})
+  doc.save('historico_retiradas.pdf')
+}
 </script>
 
-
-
 <style scoped>
-hr{
-  margin-top:10px;
+hr {
+  margin-top: 10px;
 }
-  
+
 .estoque-container {
   display: flex;
   height: 100vh;
@@ -150,16 +212,17 @@ p {
   align-items: center;
   gap: 12px;
   margin-bottom: 20px;
+  flex-wrap: wrap;
 }
 
-.top-bar input[type="search"] {
+.top-bar input[type='search'] {
   flex: 1;
   padding: 12px 20px;
   font-size: 14px;
   border: 1px solid #ddd;
   border-radius: 12px;
   background: #fff;
-  box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .btn {
@@ -220,7 +283,7 @@ p {
   border: 1px solid #dfe4ea;
   border-radius: 16px;
   padding: 20px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
 }
 
 .retirada-topo {
@@ -275,5 +338,24 @@ p {
 
 .retirada-conteudo li {
   margin-bottom: 4px;
+}
+
+.data-filtro {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.data-filtro label {
+  font-size: 13px;
+  color: #555;
+}
+
+.data-filtro input[type='date'] {
+  padding: 6px 10px;
+  font-size: 13px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fff;
 }
 </style>
