@@ -130,7 +130,7 @@ function handleRemover(id) {
     }
 
     try {
-      await axios.post('https://979lmp-8000.csb.app/api/retiradas/', payload, {
+      await axios.post('https://estoque-b8sm.onrender.com/api/retiradas/', payload, {                       //https://979lmp-8000.csb.app/api/
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'

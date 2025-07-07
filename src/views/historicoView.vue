@@ -51,6 +51,7 @@
       </div>
     </div>
   </div>
+  <canvas id="graficoRetiradas" width="600" height="300" style="display: none;"></canvas>
 </template>
 
 <script setup>
@@ -59,6 +60,7 @@ import autoTable from 'jspdf-autotable'
 import sidebarComp from '../components/sidebar/sidebarComp.vue'
 import { ref, computed, onMounted } from 'vue'
 import apiClient from '../api/api'
+import Chart from 'chart.js/auto'
 
 const retiradas = ref([])
 const usuariosMap = ref({})
@@ -132,7 +134,7 @@ const retiradasFiltradas = computed(() => {
   })
 })
 
-// Ação do botão "Filtrar" (opcional)
+// Ação do botão "Filtrar"
 const aplicarFiltro = () => {
   console.log('Filtros aplicados:', {
     termo: searchTerm.value,
@@ -142,36 +144,95 @@ const aplicarFiltro = () => {
   })
 }
 
-// Geração do PDF
-const exportarParaPDF = () => {
-  const doc = new jsPDF()
+// Geração do PDF com gráfico
+  const exportarParaPDF = async () => {
+    const doc = new jsPDF()
+    doc.setFontSize(16)
+    doc.text('Histórico de Retiradas', 14, 20)
 
-  doc.setFontSize(16)
-  doc.text('Histórico de Retiradas', 14, 20)
+    // 🔢 Contar total de cada item retirado
+    const contagemItens = {}
+    retiradasFiltradas.value.forEach(r => {
+      r.itens.forEach(item => {
+        const [quantidade, nome] = item.split('x ').map(s => s.trim())
+        const qtd = parseInt(quantidade)
+        contagemItens[nome] = (contagemItens[nome] || 0) + qtd
+      })
+    })
 
-  const tableData = retiradasFiltradas.value.map(r => [
-    r.usuario_nome,
-    r.data,
-    r.hora,
-    r.itens.join(', '),
-    r.observacoes || '-'
-  ])
+    // 🔟 Pega os 10 mais retirados
+    const topItens = Object.entries(contagemItens)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 10)
 
-  autoTable(doc, {
-    startY: 30,
-    head: [['Usuário', 'Data', 'Hora', 'Itens', 'Observações']],
-    body: tableData,
-    styles: {
-      fontSize: 10,
-      cellPadding: 3
-    },
-    headStyles: {
-      fillColor: [56, 169, 255]
-    }
-  })
+    const labels = topItens.map(([nome]) => nome)
+    const data = topItens.map(([, qtd]) => qtd)
 
-  doc.save('historico_retiradas.pdf')
-}
+    // 🎨 Cria canvas e gera gráfico de barras
+    const canvas = document.createElement('canvas')
+    canvas.width = 800
+    canvas.height = 400
+    const ctx = canvas.getContext('2d')
+
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Total Retirado',
+          data,
+          backgroundColor: '#38a9ff'
+        }]
+      },
+      options: {
+        responsive: false,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Top 10 Itens Mais Retirados'
+          },
+          legend: { display: false }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: { precision: 0 }
+          }
+        }
+      }
+    })
+
+    // Aguarda renderização
+    await new Promise(resolve => setTimeout(resolve, 500))
+    const imgData = canvas.toDataURL('image/png')
+    doc.addImage(imgData, 'PNG', 10, 30, 190, 90)
+
+    // 📋 Tabela completa abaixo
+    const tableY = 130
+    const tableData = retiradasFiltradas.value.map(r => [
+      r.usuario_nome,
+      r.data,
+      r.hora,
+      r.itens.join(', '),
+      r.observacoes || '-'
+    ])
+
+    autoTable(doc, {
+      startY: tableY,
+      head: [['Usuário', 'Data', 'Hora', 'Itens', 'Observações']],
+      body: tableData,
+      styles: {
+        fontSize: 10,
+        cellPadding: 3
+      },
+      headStyles: {
+        fillColor: [56, 169, 255]
+      }
+    })
+
+    doc.save('historico_retiradas.pdf')
+  }
+
 </script>
 
 <style scoped>
