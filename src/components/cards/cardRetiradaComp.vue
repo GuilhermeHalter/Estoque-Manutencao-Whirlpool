@@ -8,13 +8,14 @@
     </div>
     <button
       class="retirar-btn"
-      :disabled="selecionado"
-      :class="{ 'disabled': selecionado }"
+      :disabled="selecionado || produto.quantidade === 0"
+      :class="{ 'disabled': selecionado || produto.quantidade === 0 }"
       @click="abrirModal"
     >
       <i class="fa-solid fa-cart-shopping"></i>
-      {{ selecionado ? 'Item já adicionado' : 'Retirar Item' }}
+      {{ produto.quantidade === 0 ? 'Sem estoque' : (selecionado ? 'Item já adicionado' : 'Retirar Item') }}
     </button>
+
 
 
     <div v-if="mostrarModal" class="modal-overlay" @click.self="fecharModal">
@@ -159,14 +160,14 @@ function confirmarRetirada() {
   cursor: pointer;
 }
 
-  .retirar-btn.disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-    color: #666;
-  }
+.retirar-btn.disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  color: #666;
+}
 
-  .retirar-btn.disabled i {
-    color: #888;
-  }
+.retirar-btn.disabled i {
+  color: #888;
+}
 
 </style>
